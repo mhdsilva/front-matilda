@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
-  username: string;
+  name: string;
   email: string;
 }
 
@@ -20,6 +20,7 @@ interface AuthContextType {
   token: string | null;
   login: (userData: User, jwt: string) => void;
   logout: () => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   const login = (userData: User, jwt: string) => {
@@ -52,10 +54,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
     }
+    setIsLoading(false);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

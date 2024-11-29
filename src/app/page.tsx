@@ -6,12 +6,12 @@ import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login');
+    if (!user && !isLoading) {
+      router.push('/auth/login');
     }
   }, [user, router]);
   return (

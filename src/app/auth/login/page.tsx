@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,12 +11,47 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import api from '@/lib/strapiService';
+import { useAuth } from '@/context/authContext';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AuthPage() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const { login } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
-    console.log('Form submitted');
+    const form = event.currentTarget as HTMLFormElement;
+    const email = form.elements.namedItem('email') as HTMLInputElement;
+    const password = form.elements.namedItem('password') as HTMLInputElement;
+
+    try {
+      const response = await api.login(email.value, password.value);
+      if (response) {
+        const { jwt, user } = response;
+        login(user, jwt);
+        setLoading(false);
+        router.push('/');
+      } else {
+        setLoading(false);
+        toast({
+          title: 'Erro',
+          description: 'Erro ao fazer login',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      setLoading(false);
+      toast({
+        title: 'Erro',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -44,13 +79,14 @@ export default function AuthPage() {
               <Input
                 id="email"
                 type="email"
+                name="email"
                 placeholder="john@example.com"
                 required
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" name="password" required />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
@@ -60,8 +96,9 @@ export default function AuthPage() {
             <Button
               type="button"
               variant="link"
-              onClick={() => redirect('/auth/register')}
+              onClick={() => router.push('/auth/register')}
               className="w-full"
+              disabled={loading}
             >
               Não tem uma conta? Registre-se
             </Button>

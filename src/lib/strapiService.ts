@@ -30,13 +30,14 @@ class ApiService {
 
   // Método de registro
   async register(
-    username: string,
+    name: string,
     email: string,
     password: string
   ): Promise<{ jwt: string; user: any } | undefined> {
     try {
       const response = await this.api.post('/auth/local/register', {
-        username,
+        name,
+        username: email,
         email,
         password,
       });
@@ -53,6 +54,6 @@ class ApiService {
   }
 }
 
-const api = new ApiService('http://localhost:1337');
+const api = new ApiService('http://localhost:1337/api');
 
 export default api;
