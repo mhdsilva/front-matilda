@@ -47,6 +47,15 @@ class ApiService {
     }
   }
 
+  async getContents(): Promise<any | undefined> {
+    try {
+      const { data } = await this.api.get('/contents');
+      return data;
+    } catch (error: any) {
+      this.handleError(error);
+    }
+  }
+
   // Tratamento de erros
   private handleError(error: any): void {
     console.error('Erro na API:', error.response?.data || error.message);
