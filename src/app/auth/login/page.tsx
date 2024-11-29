@@ -15,12 +15,15 @@ import { useRouter } from 'next/navigation';
 import api from '@/lib/strapiService';
 import { useAuth } from '@/context/authContext';
 import { useToast } from '@/hooks/use-toast';
+import image from '../../../../public/app/logo.png';
 
 export default function AuthPage() {
   const { login } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+
+  console.log(image);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
@@ -59,11 +62,7 @@ export default function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-6">
-            <img
-              src="/placeholder.svg?height=64&width=64"
-              alt="Logo"
-              className="h-16 w-16"
-            />
+            <img src={image.src} alt="Logo" className="size-28" />
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             Login
